@@ -75,7 +75,7 @@ def run_persistence(ds, settings, seed, num_clients):
     return {"final": metrics_for(test["y"], pred, test["sensor"], sens), "pred": pred}
 
 
-def run_centralized(ds, settings, seed, num_clients, epochs):
+def run_centralized(ds, settings, seed, num_clients, epochs, on_round=None):
     """All clients upload their raw training data; one model is trained on it."""
     train, test = ds["train"], ds["test"]
     scaler = Standardizer(ds["cont_mask"]).fit(train["x"], train["y"])
@@ -88,6 +88,8 @@ def run_centralized(ds, settings, seed, num_clients, epochs):
     for ep in range(1, epochs + 1):
         loss = train_epochs(model, x, y, 1, rng)
         history.append({"round": ep, "train_loss": loss, **eval_fn(model)})
+        if on_round is not None:
+            on_round(history[-1])
 
     pred = scaler.inverse_y(predict(model, x_test))
     _, sens = noniid_partition(train["sensor"], train["y"], num_clients)
@@ -118,7 +120,7 @@ def run_local_only(ds, settings, seed, num_clients, epochs):
             "heterogeneity": heterogeneity(train["y"], parts)}
 
 
-def run_federated(ds, settings, seed, num_clients, rounds, local_epochs):
+def run_federated(ds, settings, seed, num_clients, rounds, local_epochs, on_round=None):
     train, test = ds["train"], ds["test"]
     parts, sens = make_partition(settings["partition"], train, num_clients, seed)
 
@@ -138,7 +140,8 @@ def run_federated(ds, settings, seed, num_clients, rounds, local_epochs):
                                  compression=compression,
                                  prox_mu=settings.get("prox_mu", 0.0), eval_fn=eval_fn,
                                  participation=settings.get("participation", "all"),
-                                 min_active=config.PULSE_MIN_ACTIVE, max_sleep=config.PULSE_MAX_SLEEP)
+                                 min_active=config.PULSE_MIN_ACTIVE, max_sleep=config.PULSE_MAX_SLEEP,
+                                 on_round=on_round)
 
     pred = scaler.inverse_y(predict(server.model, x_test))
     if sens is None:  # IID: every client has every sensor, show owner groups anyway
@@ -166,18 +169,18 @@ def run_federated(ds, settings, seed, num_clients, rounds, local_epochs):
 
 
 def run_experiment(name, ds, seed, num_clients=config.NUM_CLIENTS,
-                   rounds=config.NUM_ROUNDS, local_epochs=config.LOCAL_EPOCHS):
+                   rounds=config.NUM_ROUNDS, local_epochs=config.LOCAL_EPOCHS, on_round=None):
     settings = EXPERIMENTS[name]
     kind = settings["kind"]
     start = time.time()
     if kind == "persistence":
         res = run_persistence(ds, settings, seed, num_clients)
     elif kind == "centralized":
-        res = run_centralized(ds, settings, seed, num_clients, rounds * local_epochs)
+        res = run_centralized(ds, settings, seed, num_clients, rounds * local_epochs, on_round)
     elif kind == "local_only":
         res = run_local_only(ds, settings, seed, num_clients, rounds * local_epochs)
     elif kind == "federated":
-        res = run_federated(ds, settings, seed, num_clients, rounds, local_epochs)
+        res = run_federated(ds, settings, seed, num_clients, rounds, local_epochs, on_round)
     else:
         raise ValueError(kind)
     res.update({"experiment": name, "seed": seed, "settings": settings,

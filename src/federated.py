@@ -110,13 +110,14 @@ def aggregate_with_memory(old_global: dict, memory: dict, sizes: dict) -> dict:
 
 def run_fedavg(client_data, num_features, seed, num_rounds, local_epochs,
                compression="none", prox_mu=0.0, eval_fn=None,
-               participation="all", min_active=2, max_sleep=2):
+               participation="all", min_active=2, max_sleep=2, on_round=None):
     """
     client_data: list of (x_scaled, y_scaled) tuples, one per client.
     participation: "all" = plain FedAvg (everyone, every round)
                    "pulse_reuse" = PulseFed v2: same selection, sleeping clients' last update reused
                    "pulse" = PulseFed (only clients whose model moved most, see select_active)
     eval_fn(model) -> dict of test metrics, called after every round.
+    on_round(row) -> optional callback after every round (used by the live demo).
     Returns the per-round history (metrics + measured bytes) and the server.
     """
     if participation not in ("all", "pulse", "pulse_reuse"):
@@ -173,4 +174,6 @@ def run_fedavg(client_data, num_features, seed, num_rounds, local_epochs,
         if eval_fn is not None:
             row.update(eval_fn(server.model))
         history.append(row)
+        if on_round is not None:
+            on_round(row)
     return history, server

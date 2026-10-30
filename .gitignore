@@ -24,3 +24,6 @@ figures_quick/
 reports/RESULTS_quick.md
 
 # results/, figures/ and reports/ ARE committed so evaluators can see them
+
+# Built Hugging Face Space (demo/build_space.sh)
+build/

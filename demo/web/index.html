@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NovaFlow · Federated Traffic Forecasting · Team Nova (AIORI-3)</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.js"></script>
+</head>
+<body>
+<header>
+  <h1>🚦 NovaFlow: Federated Traffic-Flow Prediction with Communication-Cost Evaluation</h1>
+  <p class="team"><b>Team Nova · A3-PS003-TC442 · AIORI-3 Hackathon (PS-003)</b> · K. Nivedsagar, Stibin Steephen ·
+    Mentor: Dr. A. Immanuel Selvakumar</p>
+  <p class="sub">Our real Python simulator runs <b>inside your browser</b> on the real UCI traffic data. Nothing is pre-recorded.</p>
+</header>
+<div id="banner" class="banner">Starting…</div>
+
+<nav class="tabs">
+  <button class="tab-btn active" data-tab="tour">▶ Stage-by-stage tour</button>
+  <button class="tab-btn" data-tab="single">🔬 Run one method</button>
+  <button class="tab-btn" data-tab="results">📊 Full results (3 seeds × 30 rounds)</button>
+  <button class="tab-btn" data-tab="about">ℹ How it works</button>
+</nav>
+
+<section id="tab-tour" class="tab active">
+  <p>Runs <b>Centralised → FedAvg → PulseFed → PulseFed v2</b> one after another on four junctions with very different
+    traffic. Watch the packets: <b class="c-blue">blue</b> = model sent down, <b class="c-amber">amber</b> = update sent up,
+    <b class="c-red">red</b> = raw data (centralised). Sleeping junctions turn grey. About 1–2 minutes at normal speed.</p>
+  <div class="controls">
+    <label>Rounds per stage <input type="range" id="tour-rounds" min="5" max="30" value="10"> <span id="tour-rounds-v">10</span></label>
+    <label>Seed <select id="tour-seed"><option>0</option><option>1</option><option>2</option></select></label>
+    <label><input type="radio" name="tour-speed" value="2000" checked> Normal</label>
+    <label><input type="radio" name="tour-speed" value="700"> Fast</label>
+    <button id="tour-run" class="run" disabled>Run the tour</button>
+  </div>
+  <div id="tour-map" class="map"></div>
+  <div id="tour-status" class="status"></div>
+  <div class="charts">
+    <div class="chart"><canvas id="tour-mae"></canvas></div>
+    <div class="chart"><canvas id="tour-mb"></canvas></div>
+  </div>
+  <div class="chart wide"><canvas id="tour-fair"></canvas></div>
+  <div id="tour-part" class="part"></div>
+  <table id="tour-table" class="tbl"></table>
+</section>
+
+<section id="tab-single" class="tab">
+  <div class="controls">
+    <label>Method <select id="single-method"></select></label>
+    <label>Rounds <input type="range" id="single-rounds" min="5" max="30" value="10"> <span id="single-rounds-v">10</span></label>
+    <label>Seed <select id="single-seed"><option>0</option><option>1</option><option>2</option></select></label>
+    <label><input type="radio" name="single-speed" value="2000" checked> Normal</label>
+    <label><input type="radio" name="single-speed" value="700"> Fast</label>
+    <button id="single-run" class="run" disabled>Run</button>
+  </div>
+  <div id="single-map" class="map"></div>
+  <div id="single-status" class="status"></div>
+  <div class="charts">
+    <div class="chart"><canvas id="single-mae"></canvas></div>
+    <div class="chart"><canvas id="single-mb"></canvas></div>
+  </div>
+  <div class="chart wide"><canvas id="single-fair"></canvas></div>
+  <div id="single-part" class="part"></div>
+</section>
+
+<section id="tab-results" class="tab">
+  <p>Pre-computed with <code>step4_run_experiments.py</code> on the real dataset: mean of seeds 0, 1 and 2, 30 rounds each.</p>
+  <table id="full-table" class="tbl"></table>
+  <div id="gallery" class="gallery"></div>
+</section>
+
+<section id="tab-about" class="tab about">
+  <h2>The problem (AIORI-3 · PS-003)</h2>
+  <p>Roadside sensors normally stream raw traffic data to the cloud. <b>Federated learning</b> keeps data at each junction
+    and only sends model updates. We measure what that really costs and gains: <b>accuracy</b>, <b>fairness across
+    junctions</b> and <b>bytes</b>. Our motto: <i>measure before you federate.</i></p>
+  <h2>What happens in each stage</h2>
+  <ol>
+    <li><b>Centralised:</b> all junctions upload raw data; one model trains on everything (accuracy reference).</li>
+    <li><b>FedAvg:</b> each round the server sends the model down, junctions train on their own data, the server averages
+      their updates weighted by data size. Every byte is measured.</li>
+    <li><b>PulseFed (our idea):</b> junctions whose model barely changed skip the next round; at least 2 always talk and
+      nobody sleeps more than 2 rounds.</li>
+    <li><b>PulseFed v2 (follow-up):</b> same skipping, but the server reuses a sleeping junction's last update so every
+      road group still counts.</li>
+  </ol>
+  <h2>The data</h2>
+  <p>UCI <i>Traffic Flow Forecasting</i>: <span id="m-sensors">36</span> sensors, 15-minute volumes,
+    <span id="m-train">1261</span> training and <span id="m-test">840</span> later test steps (chronological, verified).
+    Task: predict each sensor's volume 15 minutes ahead. Our audit found the file has 48 columns (documentation says 47)
+    and that the provided target is 30 minutes ahead, so we rebuilt the true 15-minute target.</p>
+  <h2>The junctions</h2>
+  <p>Four simulated junctions. <i>Non-IID</i>: each junction owns a group of sensors, from the quietest to the busiest
+    roads. <i>IID</i>: rows shuffled evenly (only in “Run one method”).</p>
+  <h2>Honest notes</h2>
+  <p>Live runs use one seed and fewer rounds so they finish quickly, so numbers differ slightly from the 3-seed, 30-round
+    results. Browser arithmetic (WebAssembly) can differ from a laptop in the last decimal places; PulseFed's
+    talk-or-sleep choices are sensitive to such tiny differences, so its live numbers can differ more. The <i>Full
+    results</i> tab (our Python code run on a laptop, 3 seeds) is the official reference. This is a simulation; no
+    formal privacy guarantee is claimed.</p>
+</section>
+
+<footer>Dataset: Zhao, L. (2019). <i>Traffic Flow Forecasting</i> [Dataset]. UCI Machine Learning Repository, CC BY 4.0,
+  doi:10.24432/C57897 · Runs Python in the browser with Pyodide.</footer>
+<script src="app.js"></script>
+</body>
+</html>

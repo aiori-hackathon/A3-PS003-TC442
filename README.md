@@ -11,6 +11,7 @@
 
 ### Project updates
 - **Presentation:** uploaded to this repository as a PDF.
+- **Live demo:** https://huggingface.co/spaces/nxvedsagar/novaflow-demo
 - **Video presentation:** https://youtu.be/SrLrax792cI
 - **Code and results:** simulator, 10 experiments × 3 seeds on the real dataset. Full report: [`reports/RESULTS.md`](reports/RESULTS.md)
 

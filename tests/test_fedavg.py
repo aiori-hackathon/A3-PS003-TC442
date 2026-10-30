@@ -115,3 +115,11 @@ def test_pulsefed_v2_keeps_rules_and_runs():
     assert len(v2[0]["active_clients"]) == 4
     assert all(len(h["active_clients"]) >= 2 for h in v2)
     assert v2[-1]["cumulative_bytes"] <= full[-1]["cumulative_bytes"]
+
+
+def test_on_round_callback_sees_every_round():
+    rng = np.random.default_rng(0)
+    data = [(rng.normal(size=(50, 5)).astype(np.float32), rng.normal(size=50).astype(np.float32)) for _ in range(3)]
+    seen = []
+    run_fedavg(data, 5, seed=0, num_rounds=3, local_epochs=1, on_round=seen.append)
+    assert [r["round"] for r in seen] == [1, 2, 3]
