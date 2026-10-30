@@ -8,8 +8,9 @@ from .experiments import EXPERIMENTS
 from .utils import load_json
 
 
-def load_all(results_dir=config.RESULTS_DIR) -> dict:
+def load_all(results_dir=None) -> dict:
     """{experiment name: [result dict per seed]} for every experiment that has results."""
+    results_dir = results_dir or config.RESULTS_DIR
     out = {}
     for name in EXPERIMENTS:
         files = sorted((results_dir / name).glob("seed_*.json"))
@@ -40,7 +41,8 @@ def summarize(results: dict) -> dict:
     return summary
 
 
-def write_summary_csv(results: dict, path=config.RESULTS_DIR / "summary.csv") -> None:
+def write_summary_csv(results: dict, path=None) -> None:
+    path = path or config.RESULTS_DIR / "summary.csv"
     rows = []
     for name, runs in results.items():
         for r in runs:

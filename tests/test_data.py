@@ -74,3 +74,15 @@ def test_missing_values_are_filled_from_training_data_only():
     assert rep["missing_Y_tr"] == 1 and rep["missing_Y_te"] == 1
     assert Y_tr[2, 0] == Y_tr[1, 0]           # carried forward
     assert np.isfinite(Y_te).all()
+
+
+def test_quick_mode_uses_separate_folders(monkeypatch):
+    """--quick must never write into the real results/figures/report locations."""
+    from src import config
+    for attr in ("RESULTS_DIR", "FIGURES_DIR", "REPORT_NAME", "QUICK_MODE"):
+        monkeypatch.setattr(config, attr, getattr(config, attr))   # restored after the test
+    real_results, real_figures = config.RESULTS_DIR, config.FIGURES_DIR
+    config.use_quick_outputs()
+    assert config.RESULTS_DIR != real_results and config.RESULTS_DIR.name == "results_quick"
+    assert config.FIGURES_DIR != real_figures and config.FIGURES_DIR.name == "figures_quick"
+    assert config.REPORT_NAME == "RESULTS_quick.md"

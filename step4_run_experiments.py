@@ -1,7 +1,7 @@
 """
 STEP 4 - Run every experiment for every seed.
 
-    python step4_run_experiments.py --quick        # 3 rounds, 1 seed: checks everything works
+    python step4_run_experiments.py --quick        # 3 rounds, 1 seed, saved to results_quick/ (never touches real results)
     python step4_run_experiments.py                # full run (all seeds, all experiments)
     python step4_run_experiments.py --only centralized fedavg_iid
 
@@ -35,6 +35,8 @@ def main() -> int:
     if not 3 <= args.clients <= 5:
         print("PS-003 asks for 3-5 clients.")
         return 1
+    if args.quick:
+        config.use_quick_outputs()
     rounds = 3 if args.quick else args.rounds
     seeds = args.seeds or ([config.SEEDS[0]] if args.quick else config.SEEDS)
     names = args.only or list(EXPERIMENTS)
@@ -72,10 +74,12 @@ def main() -> int:
 
     # summary.csv is rebuilt from ALL saved JSON files, so --only never loses old results
     write_summary_csv(load_all())
-    print(f"\nDone in {time.time() - start:.0f}s. Saved results/summary.csv")
+    print(f"\nDone in {time.time() - start:.0f}s. Saved {config.RESULTS_DIR.name}/summary.csv")
     if args.quick:
-        print("This was a QUICK smoke test. Run again without --quick for real results.")
-    print("Next: python step5_make_plots.py")
+        print("This was a QUICK smoke test, saved in results_quick/. Your real results are untouched.")
+        print("Next: python step5_make_plots.py --quick")
+    else:
+        print("Next: python step5_make_plots.py")
     return 0
 
 

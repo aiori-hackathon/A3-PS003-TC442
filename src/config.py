@@ -16,6 +16,20 @@ DATA_PROCESSED = ROOT / "data" / "processed"
 RESULTS_DIR = ROOT / "results"
 FIGURES_DIR = ROOT / "figures"
 REPORTS_DIR = ROOT / "reports"
+REPORT_NAME = "RESULTS.md"
+QUICK_MODE = False
+
+
+def use_quick_outputs() -> None:
+    """
+    Send --quick smoke-test outputs to separate folders so they can never
+    overwrite or mix with real results.
+    """
+    global RESULTS_DIR, FIGURES_DIR, REPORT_NAME, QUICK_MODE
+    RESULTS_DIR = ROOT / "results_quick"
+    FIGURES_DIR = ROOT / "figures_quick"
+    REPORT_NAME = "RESULTS_quick.md"
+    QUICK_MODE = True
 
 DATASET_URL = "https://archive.ics.uci.edu/static/public/608/traffic+flow+forecasting.zip"
 

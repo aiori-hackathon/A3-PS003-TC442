@@ -18,4 +18,9 @@ data/processed/
 .DS_Store
 Thumbs.db
 
+# Quick smoke-test outputs (step4/5/6 --quick) are never committed
+results_quick/
+figures_quick/
+reports/RESULTS_quick.md
+
 # results/, figures/ and reports/ ARE committed so evaluators can see them

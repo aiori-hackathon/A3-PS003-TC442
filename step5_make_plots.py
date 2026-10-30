@@ -1,7 +1,8 @@
 """
 STEP 5 - Turn saved results into figures (saved in figures/).
 
-    python step5_make_plots.py
+    python step5_make_plots.py            # real results -> figures/
+    python step5_make_plots.py --quick    # smoke-test results -> figures_quick/
 
 Only experiments that have results are plotted; missing ones are skipped
 with a message, nothing is invented.
@@ -29,19 +30,23 @@ LABELS = {
     "fedavg_noniid_fp16": "FedAvg non-IID + FP16",
     "fedavg_noniid_int8": "FedAvg non-IID + INT8",
 }
-FIG = config.FIGURES_DIR
 
 
 def save(fig, name):
     fig.tight_layout()
-    fig.savefig(FIG / name, dpi=150)
+    fig.savefig(config.FIGURES_DIR / name, dpi=150)
     plt.close(fig)
-    print(f"  saved figures/{name}")
+    print(f"  saved {config.FIGURES_DIR.name}/{name}")
 
 
 def history_matrix(runs, key):
     """Stack a per-round metric from every seed -> (seeds, rounds)."""
-    return np.array([[h[key] for h in r["history"]] for r in runs])
+    lengths = {len(r["history"]) for r in runs}
+    if len(lengths) > 1:   # e.g. leftovers from an old run with a different number of rounds
+        print(f"  WARNING: seeds have different numbers of rounds {sorted(lengths)}; "
+              f"plotting only the first {min(lengths)}. Re-run step4 to make them consistent.")
+    n = min(lengths)
+    return np.array([[h[key] for h in r["history"][:n]] for r in runs])
 
 
 def plot_accuracy(summary):
@@ -226,7 +231,9 @@ def plot_participation(results):
 
 
 def main() -> int:
-    FIG.mkdir(parents=True, exist_ok=True)
+    if "--quick" in sys.argv:
+        config.use_quick_outputs()
+    config.FIGURES_DIR.mkdir(parents=True, exist_ok=True)
     results = load_all()
     if not results:
         print("No results found. Run step4_run_experiments.py first.")
@@ -242,7 +249,7 @@ def main() -> int:
     plot_fairness(results)
     plot_heterogeneity()
     plot_participation(results)
-    print("Next: python step6_make_report.py")
+    print("Next: python step6_make_report.py" + (" --quick" if config.QUICK_MODE else ""))
     return 0
 
 

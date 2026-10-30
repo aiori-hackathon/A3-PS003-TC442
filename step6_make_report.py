@@ -1,7 +1,8 @@
 """
 STEP 6 - Write reports/RESULTS.md from the saved results.
 
-    python step6_make_report.py
+    python step6_make_report.py            # real results -> reports/RESULTS.md
+    python step6_make_report.py --quick    # smoke test -> reports/RESULTS_quick.md
 
 Every number in the report is read from results/ - nothing is typed by hand.
 Experiments without results are listed as NOT YET RUN.
@@ -40,6 +41,8 @@ def mb(b):
 
 
 def main() -> int:
+    if "--quick" in sys.argv:
+        config.use_quick_outputs()
     results = load_all()
     summary = summarize(results)
     prep_path = config.REPORTS_DIR / "preprocessing.json"
@@ -257,9 +260,9 @@ def main() -> int:
                    ("07_client_distributions.png", "Client data distributions"),
                    ("08_pulsefed_participation.png", "PulseFed: who talked in which round")]:
         if (config.FIGURES_DIR / f).exists():
-            add(f"**{cap}**\n\n![{cap}](../figures/{f})\n")
+            add(f"**{cap}**\n\n![{cap}](../{config.FIGURES_DIR.name}/{f})\n")
         else:
-            add(f"- {cap}: NOT YET GENERATED (`step5_make_plots.py`)")
+            add(f"- {cap}: NOT YET GENERATED (`step5_make_plots.py" + (" --quick" if config.QUICK_MODE else "") + "`)")
     add("")
 
     # -------------------------------------------------------------- limitations
@@ -297,7 +300,9 @@ def main() -> int:
     else:
         add("NOT YET AVAILABLE - run the experiments first.")
     interp = config.REPORTS_DIR / "team_interpretation.md"
-    if interp.exists():
+    if config.QUICK_MODE:
+        add("\n*Quick smoke-test report - team interpretation omitted.*\n")
+    elif interp.exists():
         add("\n### Team interpretation\n")
         add(interp.read_text(encoding="utf-8").strip() + "\n")
     else:
@@ -305,7 +310,7 @@ def main() -> int:
             "it is inserted here every time the report is regenerated.\n")
 
     config.REPORTS_DIR.mkdir(parents=True, exist_ok=True)
-    out = config.REPORTS_DIR / "RESULTS.md"
+    out = config.REPORTS_DIR / config.REPORT_NAME
     out.write_text("\n".join(L), encoding="utf-8")
     print(f"Saved {out}")
     if missing or quick:
