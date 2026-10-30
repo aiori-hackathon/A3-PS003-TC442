@@ -1,0 +1,28 @@
+# Runs automatically on every push: unit tests + the full pipeline on SYNTHETIC data.
+# A green check mark on GitHub shows the code works on a clean machine.
+name: tests
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - run: pip install -r requirements.txt
+      - name: Unit tests
+        run: python -m pytest -q
+      - name: Pipeline smoke test on synthetic data (results are NOT committed)
+        run: |
+          python tests/make_fake_dataset.py data/raw/traffic_dataset.mat
+          python step2_inspect_data.py
+          python step3_prepare_data.py
+          python step4_run_experiments.py --quick
+          python step5_make_plots.py
+          python step6_make_report.py

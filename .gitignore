@@ -1,0 +1,21 @@
+# Virtual environment (each person creates their own)
+.venv/
+venv/
+
+# Python cache
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Dataset: downloaded by step1_download_data.py, not committed
+data/raw/*
+!data/raw/.gitkeep
+data/processed/
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# results/, figures/ and reports/ ARE committed so evaluators can see them

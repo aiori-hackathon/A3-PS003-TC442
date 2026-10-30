@@ -1,0 +1,39 @@
+{
+  "final": {
+    "mae": 0.026574404910206795,
+    "rmse": 0.03880952671170235,
+    "per_client": [
+      {
+        "client": 0,
+        "mae": 0.019612368196249008,
+        "rmse": 0.031234152615070343
+      },
+      {
+        "client": 1,
+        "mae": 0.023479174822568893,
+        "rmse": 0.033015668392181396
+      },
+      {
+        "client": 2,
+        "mae": 0.029978636652231216,
+        "rmse": 0.04278695583343506
+      },
+      {
+        "client": 3,
+        "mae": 0.03322743996977806,
+        "rmse": 0.04613445699214935
+      }
+    ]
+  },
+  "experiment": "persistence",
+  "seed": 2,
+  "settings": {
+    "kind": "persistence",
+    "extra": true
+  },
+  "num_clients": 4,
+  "rounds": 30,
+  "local_epochs": 1,
+  "runtime_sec": 0.0,
+  "quick_mode": false
+}

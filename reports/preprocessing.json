@@ -1,0 +1,166 @@
+{
+  "meta": {
+    "num_train_steps": 1261,
+    "num_test_steps": 840,
+    "num_sensors": 36,
+    "num_raw_features": 48,
+    "newest_lag_column": 9,
+    "temporal_order_match_train": 1.0,
+    "temporal_order_match_test": 1.0,
+    "train_test_boundary_match": 1.0,
+    "dataset_target_steps_ahead": 2,
+    "dataset_target_offset_match": 1.0,
+    "column_checks": {
+      "num_features": 48,
+      "enough_columns": true,
+      "day": {
+        "binary": true,
+        "share_of_rows_with_exactly_one_1": 1.0
+      },
+      "hour": {
+        "binary": true,
+        "share_of_rows_with_exactly_one_1": 1.0
+      },
+      "direction": {
+        "binary": true,
+        "share_of_rows_with_exactly_one_1": 1.0
+      },
+      "road": {
+        "binary": true,
+        "share_of_rows_with_exactly_one_1": 1.0
+      },
+      "lanes": {
+        "min": 1.0,
+        "max": 5.0,
+        "whole_numbers": true
+      }
+    },
+    "missing_X_tr": 0,
+    "missing_Y_tr": 0,
+    "missing_X_te": 0,
+    "missing_Y_te": 0,
+    "target_mode": "next_15min",
+    "target_steps_after_newest_lag": 1,
+    "num_features_model": 30
+  },
+  "feature_names": [
+    "lag_1",
+    "lag_2",
+    "lag_3",
+    "lag_4",
+    "lag_5",
+    "lag_6",
+    "lag_7",
+    "lag_8",
+    "lag_9",
+    "lag_10",
+    "lag_mean",
+    "lag_std",
+    "diff_1",
+    "trend_10",
+    "hour_sin",
+    "hour_cos",
+    "day_0",
+    "day_1",
+    "day_2",
+    "day_3",
+    "day_4",
+    "direction_0",
+    "direction_1",
+    "direction_2",
+    "direction_3",
+    "road_0",
+    "road_1",
+    "road_2",
+    "road_3",
+    "lanes"
+  ],
+  "heterogeneity_iid": {
+    "per_client_distance": [
+      0.006383888391807735,
+      0.007267304998498174,
+      0.011677271314326582,
+      0.014037378434840196
+    ],
+    "mean_distance": 0.009841460784868172,
+    "per_client_samples": [
+      11349,
+      11349,
+      11349,
+      11349
+    ],
+    "per_client_mean_target": [
+      0.30386826395988464,
+      0.3049965500831604,
+      0.3052173852920532,
+      0.30197373032569885
+    ]
+  },
+  "heterogeneity_noniid": {
+    "per_client_distance": [
+      0.6894047684400558,
+      0.253794362918506,
+      0.22298986082990696,
+      0.5803318349915774
+    ],
+    "mean_distance": 0.4366302067950115,
+    "per_client_samples": [
+      11349,
+      11349,
+      11349,
+      11349
+    ],
+    "per_client_mean_target": [
+      0.16642485558986664,
+      0.28156712651252747,
+      0.3482292592525482,
+      0.419834703207016
+    ]
+  },
+  "noniid_client_sensors": [
+    [
+      24,
+      32,
+      28,
+      27,
+      23,
+      22,
+      15,
+      2,
+      33
+    ],
+    [
+      3,
+      0,
+      26,
+      7,
+      16,
+      17,
+      18,
+      5,
+      11
+    ],
+    [
+      1,
+      4,
+      31,
+      29,
+      35,
+      34,
+      30,
+      6,
+      8
+    ],
+    [
+      20,
+      10,
+      13,
+      19,
+      12,
+      21,
+      9,
+      25,
+      14
+    ]
+  ]
+}
