@@ -73,3 +73,19 @@ for r = 1 .. R:
 Hypothesis: fewer bytes per round for a small accuracy cost. With min_active = 2 of 4,
 the saving per round is capped near 50%. Risk: quiet roads may be skipped more often,
 so per-client (equity) results are always reported next to the overall MAE.
+
+## PulseFed v2: reuse sleeping clients' last update (`participation="pulse_reuse"`)
+
+Follow-up to PulseFed, with the rule fixed before running. Selection is identical to PulseFed;
+only the aggregation changes. Inspired by averaging clients' latest stored updates
+(MIFA, Gu et al., NeurIPS 2021).
+
+```
+memory_k ← last update Δ_k = w_k − w_global received from client k
+
+each round, after the active clients report:
+    for each active client k:  memory_k ← w_k − w_r          # fresh update
+    w_{r+1} ← w_r + Σ_{all k} (n_k / n) · memory_k            # sleeping clients: last update reused
+```
+Sleeping clients send nothing, so the bytes are the same kind as PulseFed; with every
+client active this is exactly FedAvg.

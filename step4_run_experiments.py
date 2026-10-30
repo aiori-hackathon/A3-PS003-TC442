@@ -48,8 +48,9 @@ def main() -> int:
         return 1
 
     config.RESULTS_DIR.mkdir(parents=True, exist_ok=True)
-    np.savez_compressed(config.RESULTS_DIR / "test_targets.npz",
-                        y=ds["test"]["y"], sensor=ds["test"]["sensor"], t=ds["test"]["t"])
+    if not (config.RESULTS_DIR / "test_targets.npz").exists():
+        np.savez_compressed(config.RESULTS_DIR / "test_targets.npz",
+                            y=ds["test"]["y"], sensor=ds["test"]["sensor"], t=ds["test"]["t"])
     start = time.time()
     for name in names:
         for seed in seeds:

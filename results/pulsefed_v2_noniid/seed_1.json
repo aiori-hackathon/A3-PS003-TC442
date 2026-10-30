@@ -1,0 +1,642 @@
+{
+  "final": {
+    "mae": 0.024590441957116127,
+    "rmse": 0.035663045942783356,
+    "per_client": [
+      {
+        "client": 0,
+        "mae": 0.02149101532995701,
+        "rmse": 0.030996065586805344
+      },
+      {
+        "client": 1,
+        "mae": 0.020543260499835014,
+        "rmse": 0.028903482481837273
+      },
+      {
+        "client": 2,
+        "mae": 0.02596435137093067,
+        "rmse": 0.037593353539705276
+      },
+      {
+        "client": 3,
+        "mae": 0.03036314807832241,
+        "rmse": 0.04333571344614029
+      }
+    ]
+  },
+  "history": [
+    {
+      "round": 1,
+      "downlink_bytes": 71304,
+      "uplink_bytes": 71304,
+      "control_bytes": 1080,
+      "round_bytes": 143688,
+      "cumulative_bytes": 143688,
+      "active_clients": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "forced_clients": [],
+      "train_loss": 0.17211403236605857,
+      "test_mae": 0.041496891528367996,
+      "test_rmse": 0.054284390062093735
+    },
+    {
+      "round": 2,
+      "downlink_bytes": 53478,
+      "uplink_bytes": 53478,
+      "control_bytes": 1080,
+      "round_bytes": 108036,
+      "cumulative_bytes": 251724,
+      "active_clients": [
+        1,
+        2,
+        3
+      ],
+      "forced_clients": [],
+      "train_loss": 0.034772616016215986,
+      "test_mae": 0.05090668797492981,
+      "test_rmse": 0.06556767970323563
+    },
+    {
+      "round": 3,
+      "downlink_bytes": 35652,
+      "uplink_bytes": 35652,
+      "control_bytes": 1080,
+      "round_bytes": 72384,
+      "cumulative_bytes": 324108,
+      "active_clients": [
+        0,
+        2
+      ],
+      "forced_clients": [],
+      "train_loss": 0.035145172635771986,
+      "test_mae": 0.03270169720053673,
+      "test_rmse": 0.04433247819542885
+    },
+    {
+      "round": 4,
+      "downlink_bytes": 35652,
+      "uplink_bytes": 35652,
+      "control_bytes": 1080,
+      "round_bytes": 72384,
+      "cumulative_bytes": 396492,
+      "active_clients": [
+        1,
+        3
+      ],
+      "forced_clients": [],
+      "train_loss": 0.026822403410750137,
+      "test_mae": 0.030321858823299408,
+      "test_rmse": 0.043005820363759995
+    },
+    {
+      "round": 5,
+      "downlink_bytes": 35652,
+      "uplink_bytes": 35652,
+      "control_bytes": 1080,
+      "round_bytes": 72384,
+      "cumulative_bytes": 468876,
+      "active_clients": [
+        0,
+        2
+      ],
+      "forced_clients": [],
+      "train_loss": 0.030195759029490947,
+      "test_mae": 0.03229972720146179,
+      "test_rmse": 0.045956894755363464
+    },
+    {
+      "round": 6,
+      "downlink_bytes": 53478,
+      "uplink_bytes": 53478,
+      "control_bytes": 1080,
+      "round_bytes": 108036,
+      "cumulative_bytes": 576912,
+      "active_clients": [
+        1,
+        2,
+        3
+      ],
+      "forced_clients": [],
+      "train_loss": 0.028135514509332306,
+      "test_mae": 0.02637500874698162,
+      "test_rmse": 0.03821347653865814
+    },
+    {
+      "round": 7,
+      "downlink_bytes": 35652,
+      "uplink_bytes": 35652,
+      "control_bytes": 1080,
+      "round_bytes": 72384,
+      "cumulative_bytes": 649296,
+      "active_clients": [
+        0,
+        2
+      ],
+      "forced_clients": [],
+      "train_loss": 0.029144145571321042,
+      "test_mae": 0.024975182488560677,
+      "test_rmse": 0.03580094873905182
+    },
+    {
+      "round": 8,
+      "downlink_bytes": 35652,
+      "uplink_bytes": 35652,
+      "control_bytes": 1080,
+      "round_bytes": 72384,
+      "cumulative_bytes": 721680,
+      "active_clients": [
+        2,
+        3
+      ],
+      "forced_clients": [],
+      "train_loss": 0.03100047022542803,
+      "test_mae": 0.02467758022248745,
+      "test_rmse": 0.03534206002950668
+    },
+    {
+      "round": 9,
+      "downlink_bytes": 53478,
+      "uplink_bytes": 53478,
+      "control_bytes": 1080,
+      "round_bytes": 108036,
+      "cumulative_bytes": 829716,
+      "active_clients": [
+        0,
+        1,
+        2
+      ],
+      "forced_clients": [
+        1
+      ],
+      "train_loss": 0.025048485344547348,
+      "test_mae": 0.024843988940119743,
+      "test_rmse": 0.03587239980697632
+    },
+    {
+      "round": 10,
+      "downlink_bytes": 35652,
+      "uplink_bytes": 35652,
+      "control_bytes": 1080,
+      "round_bytes": 72384,
+      "cumulative_bytes": 902100,
+      "active_clients": [
+        2,
+        3
+      ],
+      "forced_clients": [],
+      "train_loss": 0.03057065377393812,
+      "test_mae": 0.02647762931883335,
+      "test_rmse": 0.03823167458176613
+    },
+    {
+      "round": 11,
+      "downlink_bytes": 35652,
+      "uplink_bytes": 35652,
+      "control_bytes": 1080,
+      "round_bytes": 72384,
+      "cumulative_bytes": 974484,
+      "active_clients": [
+        0,
+        2
+      ],
+      "forced_clients": [],
+      "train_loss": 0.02780124743228043,
+      "test_mae": 0.026207176968455315,
+      "test_rmse": 0.03772813454270363
+    },
+    {
+      "round": 12,
+      "downlink_bytes": 53478,
+      "uplink_bytes": 53478,
+      "control_bytes": 1080,
+      "round_bytes": 108036,
+      "cumulative_bytes": 1082520,
+      "active_clients": [
+        1,
+        2,
+        3
+      ],
+      "forced_clients": [
+        1
+      ],
+      "train_loss": 0.025852582800576358,
+      "test_mae": 0.025370929390192032,
+      "test_rmse": 0.03669654205441475
+    },
+    {
+      "round": 13,
+      "downlink_bytes": 53478,
+      "uplink_bytes": 53478,
+      "control_bytes": 1080,
+      "round_bytes": 108036,
+      "cumulative_bytes": 1190556,
+      "active_clients": [
+        0,
+        2,
+        3
+      ],
+      "forced_clients": [],
+      "train_loss": 0.02851079280188694,
+      "test_mae": 0.024769576266407967,
+      "test_rmse": 0.03585345298051834
+    },
+    {
+      "round": 14,
+      "downlink_bytes": 35652,
+      "uplink_bytes": 35652,
+      "control_bytes": 1080,
+      "round_bytes": 72384,
+      "cumulative_bytes": 1262940,
+      "active_clients": [
+        2,
+        3
+      ],
+      "forced_clients": [],
+      "train_loss": 0.02961319407415512,
+      "test_mae": 0.024365259334445,
+      "test_rmse": 0.035172898322343826
+    },
+    {
+      "round": 15,
+      "downlink_bytes": 53478,
+      "uplink_bytes": 53478,
+      "control_bytes": 1080,
+      "round_bytes": 108036,
+      "cumulative_bytes": 1370976,
+      "active_clients": [
+        1,
+        2,
+        3
+      ],
+      "forced_clients": [
+        1
+      ],
+      "train_loss": 0.02546891186872264,
+      "test_mae": 0.024362891912460327,
+      "test_rmse": 0.035210732370615005
+    },
+    {
+      "round": 16,
+      "downlink_bytes": 53478,
+      "uplink_bytes": 53478,
+      "control_bytes": 1080,
+      "round_bytes": 108036,
+      "cumulative_bytes": 1479012,
+      "active_clients": [
+        0,
+        2,
+        3
+      ],
+      "forced_clients": [],
+      "train_loss": 0.02770963855431105,
+      "test_mae": 0.02512693777680397,
+      "test_rmse": 0.036467812955379486
+    },
+    {
+      "round": 17,
+      "downlink_bytes": 35652,
+      "uplink_bytes": 35652,
+      "control_bytes": 1080,
+      "round_bytes": 72384,
+      "cumulative_bytes": 1551396,
+      "active_clients": [
+        0,
+        2
+      ],
+      "forced_clients": [],
+      "train_loss": 0.02671499279472038,
+      "test_mae": 0.025375869125127792,
+      "test_rmse": 0.03701489418745041
+    },
+    {
+      "round": 18,
+      "downlink_bytes": 53478,
+      "uplink_bytes": 53478,
+      "control_bytes": 1080,
+      "round_bytes": 108036,
+      "cumulative_bytes": 1659432,
+      "active_clients": [
+        0,
+        1,
+        2
+      ],
+      "forced_clients": [
+        1
+      ],
+      "train_loss": 0.023374804315649964,
+      "test_mae": 0.024956483393907547,
+      "test_rmse": 0.03638485074043274
+    },
+    {
+      "round": 19,
+      "downlink_bytes": 53478,
+      "uplink_bytes": 53478,
+      "control_bytes": 1080,
+      "round_bytes": 108036,
+      "cumulative_bytes": 1767468,
+      "active_clients": [
+        0,
+        2,
+        3
+      ],
+      "forced_clients": [
+        3
+      ],
+      "train_loss": 0.02739714336356049,
+      "test_mae": 0.024674521759152412,
+      "test_rmse": 0.035746075212955475
+    },
+    {
+      "round": 20,
+      "downlink_bytes": 35652,
+      "uplink_bytes": 35652,
+      "control_bytes": 1080,
+      "round_bytes": 72384,
+      "cumulative_bytes": 1839852,
+      "active_clients": [
+        0,
+        2
+      ],
+      "forced_clients": [],
+      "train_loss": 0.02615488315402742,
+      "test_mae": 0.024560902267694473,
+      "test_rmse": 0.035568710416555405
+    },
+    {
+      "round": 21,
+      "downlink_bytes": 53478,
+      "uplink_bytes": 53478,
+      "control_bytes": 1080,
+      "round_bytes": 108036,
+      "cumulative_bytes": 1947888,
+      "active_clients": [
+        1,
+        2,
+        3
+      ],
+      "forced_clients": [
+        1
+      ],
+      "train_loss": 0.024533829273822378,
+      "test_mae": 0.024715332314372063,
+      "test_rmse": 0.0355842262506485
+    },
+    {
+      "round": 22,
+      "downlink_bytes": 35652,
+      "uplink_bytes": 35652,
+      "control_bytes": 1080,
+      "round_bytes": 72384,
+      "cumulative_bytes": 2020272,
+      "active_clients": [
+        0,
+        2
+      ],
+      "forced_clients": [],
+      "train_loss": 0.0260137913864986,
+      "test_mae": 0.025690864771604538,
+      "test_rmse": 0.03698655962944031
+    },
+    {
+      "round": 23,
+      "downlink_bytes": 35652,
+      "uplink_bytes": 35652,
+      "control_bytes": 1080,
+      "round_bytes": 72384,
+      "cumulative_bytes": 2092656,
+      "active_clients": [
+        0,
+        2
+      ],
+      "forced_clients": [],
+      "train_loss": 0.026003569142980108,
+      "test_mae": 0.0255892276763916,
+      "test_rmse": 0.03679128363728523
+    },
+    {
+      "round": 24,
+      "downlink_bytes": 71304,
+      "uplink_bytes": 71304,
+      "control_bytes": 1080,
+      "round_bytes": 143688,
+      "cumulative_bytes": 2236344,
+      "active_clients": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "forced_clients": [
+        1
+      ],
+      "train_loss": 0.02448773922158901,
+      "test_mae": 0.024973560124635696,
+      "test_rmse": 0.035982728004455566
+    },
+    {
+      "round": 25,
+      "downlink_bytes": 35652,
+      "uplink_bytes": 35652,
+      "control_bytes": 1080,
+      "round_bytes": 72384,
+      "cumulative_bytes": 2308728,
+      "active_clients": [
+        0,
+        2
+      ],
+      "forced_clients": [],
+      "train_loss": 0.025793873621840994,
+      "test_mae": 0.024531716480851173,
+      "test_rmse": 0.03539246693253517
+    },
+    {
+      "round": 26,
+      "downlink_bytes": 53478,
+      "uplink_bytes": 53478,
+      "control_bytes": 1080,
+      "round_bytes": 108036,
+      "cumulative_bytes": 2416764,
+      "active_clients": [
+        0,
+        2,
+        3
+      ],
+      "forced_clients": [],
+      "train_loss": 0.02673340301284406,
+      "test_mae": 0.024640602990984917,
+      "test_rmse": 0.03559153527021408
+    },
+    {
+      "round": 27,
+      "downlink_bytes": 53478,
+      "uplink_bytes": 53478,
+      "control_bytes": 1080,
+      "round_bytes": 108036,
+      "cumulative_bytes": 2524800,
+      "active_clients": [
+        0,
+        1,
+        2
+      ],
+      "forced_clients": [
+        1
+      ],
+      "train_loss": 0.022412309174769166,
+      "test_mae": 0.02516828291118145,
+      "test_rmse": 0.03634633496403694
+    },
+    {
+      "round": 28,
+      "downlink_bytes": 35652,
+      "uplink_bytes": 35652,
+      "control_bytes": 1080,
+      "round_bytes": 72384,
+      "cumulative_bytes": 2597184,
+      "active_clients": [
+        0,
+        2
+      ],
+      "forced_clients": [],
+      "train_loss": 0.025472673003301083,
+      "test_mae": 0.025181332603096962,
+      "test_rmse": 0.03634461760520935
+    },
+    {
+      "round": 29,
+      "downlink_bytes": 53478,
+      "uplink_bytes": 53478,
+      "control_bytes": 1080,
+      "round_bytes": 108036,
+      "cumulative_bytes": 2705220,
+      "active_clients": [
+        0,
+        2,
+        3
+      ],
+      "forced_clients": [
+        3
+      ],
+      "train_loss": 0.026536163940413443,
+      "test_mae": 0.02461215853691101,
+      "test_rmse": 0.03587568923830986
+    },
+    {
+      "round": 30,
+      "downlink_bytes": 53478,
+      "uplink_bytes": 53478,
+      "control_bytes": 1080,
+      "round_bytes": 108036,
+      "cumulative_bytes": 2813256,
+      "active_clients": [
+        0,
+        1,
+        2
+      ],
+      "forced_clients": [
+        1
+      ],
+      "train_loss": 0.022340377719790187,
+      "test_mae": 0.024590441957116127,
+      "test_rmse": 0.035663045942783356
+    }
+  ],
+  "comm": {
+    "compression": "none",
+    "setup_bytes": 12792,
+    "bytes_per_round_mean": 93775.2,
+    "downlink_bytes_per_round": 46347.6,
+    "control_bytes_total": 32400,
+    "uploads_total": 78,
+    "uploads_if_all_clients": 120,
+    "uplink_bytes_per_round_mean": 46347.6,
+    "total_bytes": 2826048,
+    "model_float32_bytes": 16388,
+    "raw_volume_only_bytes": 181584
+  },
+  "heterogeneity": {
+    "per_client_distance": [
+      0.6894047684400558,
+      0.253794362918506,
+      0.22298986082990696,
+      0.5803318349915774
+    ],
+    "mean_distance": 0.4366302067950115,
+    "per_client_samples": [
+      11349,
+      11349,
+      11349,
+      11349
+    ],
+    "per_client_mean_target": [
+      0.16642485558986664,
+      0.28156712651252747,
+      0.3482292592525482,
+      0.419834703207016
+    ]
+  },
+  "client_sensors": [
+    [
+      24,
+      32,
+      28,
+      27,
+      23,
+      22,
+      15,
+      2,
+      33
+    ],
+    [
+      3,
+      0,
+      26,
+      7,
+      16,
+      17,
+      18,
+      5,
+      11
+    ],
+    [
+      1,
+      4,
+      31,
+      29,
+      35,
+      34,
+      30,
+      6,
+      8
+    ],
+    [
+      20,
+      10,
+      13,
+      19,
+      12,
+      21,
+      9,
+      25,
+      14
+    ]
+  ],
+  "model_params": 4097,
+  "experiment": "pulsefed_v2_noniid",
+  "seed": 1,
+  "settings": {
+    "kind": "federated",
+    "partition": "noniid",
+    "participation": "pulse_reuse",
+    "extra": true
+  },
+  "num_clients": 4,
+  "rounds": 30,
+  "local_epochs": 1,
+  "runtime_sec": 1.53,
+  "quick_mode": false
+}

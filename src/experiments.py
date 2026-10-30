@@ -23,6 +23,7 @@ EXPERIMENTS = {
     "fedavg_noniid":      {"kind": "federated", "partition": "noniid", "extra": False},
     "local_only_noniid":  {"kind": "local_only", "partition": "noniid", "extra": True},
     "pulsefed_noniid":    {"kind": "federated", "partition": "noniid", "participation": "pulse", "extra": True},
+    "pulsefed_v2_noniid": {"kind": "federated", "partition": "noniid", "participation": "pulse_reuse", "extra": True},
     "fedprox_noniid":     {"kind": "federated", "partition": "noniid", "prox_mu": config.FEDPROX_MU, "extra": True},
     "fedavg_noniid_fp16": {"kind": "federated", "partition": "noniid", "compression": "fp16", "extra": True},
     "fedavg_noniid_int8": {"kind": "federated", "partition": "noniid", "compression": "int8", "extra": True},

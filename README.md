@@ -12,7 +12,7 @@
 ### Project updates
 - **Presentation:** uploaded to this repository as a PDF.
 - **Video presentation:** https://youtu.be/SrLrax792cI
-- **Code and results:** simulator, 9 experiments × 3 seeds on the real dataset. Full report: [`reports/RESULTS.md`](reports/RESULTS.md)
+- **Code and results:** simulator, 10 experiments × 3 seeds on the real dataset. Full report: [`reports/RESULTS.md`](reports/RESULTS.md)
 
 ---
 
@@ -36,6 +36,7 @@ Our motto: **measure before you federate.**
 | FedAvg, non-IID junctions | 0.0258 | 0.0371 | 4.29 MB |
 | Local-only (no collaboration) | 0.0225 | 0.0328 | 0 MB |
 | PulseFed (our proposal) | 0.0269 | 0.0406 | 2.76 MB |
+| PulseFed v2 (follow-up) | 0.0259 | 0.0378 | 2.79 MB |
 | FedProx (μ = 0.01) | 0.0254 | 0.0366 | 4.29 MB |
 | FedAvg + FP16 updates | 0.0257 | 0.0370 | 3.17 MB |
 | FedAvg + INT8 updates | 0.0258 | 0.0371 | 2.74 MB |
@@ -47,7 +48,8 @@ Volumes are scaled 0–1 in the dataset, so an MAE of 0.022 means guesses are of
 - With very different junctions, FedAvg is 17% worse than centralised, and the damage falls on the **quietest and busiest roads**. On the quietest roads it is even worse than the naive baseline.
 - Training each road group alone beat the shared model here, which points to personalised FL as the next step.
 - **INT8 compression cut traffic by 36% with no accuracy loss.**
-- PulseFed, our heuristic that lets junctions skip rounds when their model barely changes, saved 37% of the bytes but hurt accuracy and starved the busiest roads. INT8 achieves the same saving without that cost.
+- PulseFed, our heuristic that lets junctions skip rounds when their model barely changes, saved 37% of the bytes but hurt accuracy and starved the busiest roads.
+- **PulseFed v2** (follow-up, rule fixed before running) reuses sleeping junctions' last update. It kept the saving and brought average accuracy back to FedAvg's level, but the busiest roads still suffer and results vary more across seeds; with 3 seeds the gain is promising, not proven. INT8 remains our recommendation.
 - One FedAvg training sends about **24×** more data than the raw counts, equal to about **310 days** of streaming raw counts from all 36 sensors (our *Communication Payback Period*). For scalar sensors, FL's value is keeping data local; for cameras, the balance reverses.
 
 See [`reports/RESULTS.md`](reports/RESULTS.md) for every number, per-seed values, per-junction results and all figures.
@@ -76,7 +78,7 @@ Requires Python 3.10–3.12. All commands run from the repository folder.
 python3 -m venv .venv
 source .venv/bin/activate          # Windows: .venv\Scripts\Activate.ps1
 pip install -r requirements.txt
-python -m pytest -q                # expect: 32 passed
+python -m pytest -q                # expect: 34 passed
 ```
 
 **Run the pipeline**
@@ -84,7 +86,7 @@ python -m pytest -q                # expect: 32 passed
 python step1_download_data.py      # download the dataset into data/raw/
 python step2_inspect_data.py       # checks: layout, time order, target horizon
 python step3_prepare_data.py       # features, chronological split, client preview
-python step4_run_experiments.py    # 9 experiments x 3 seeds (about 1 minute)
+python step4_run_experiments.py    # 10 experiments x 3 seeds (about 1 minute)
 python step5_make_plots.py         # figures/
 python step6_make_report.py        # reports/RESULTS.md
 ```
@@ -109,6 +111,7 @@ If Step 2 reports a problem, run `python step2b_diagnose_layout.py` for a detail
 | `persistence` | Predict next volume = current volume | extra |
 | `local_only_noniid` | Each junction trains alone | extra |
 | `pulsefed_noniid` | PulseFed: only junctions whose model moved most talk (min 2, max 2 rounds asleep) | extra (our proposal) |
+| `pulsefed_v2_noniid` | PulseFed v2: same selection, sleeping junctions' last update reused (no extra bytes) | extra (follow-up) |
 | `fedprox_noniid` | FedAvg + proximal term | extra |
 | `fedavg_noniid_fp16` / `_int8` | FedAvg with compressed uplink updates | extra |
 
@@ -126,8 +129,8 @@ If Step 2 reports a problem, run `python step2b_diagnose_layout.py` for a detail
 ├── step5_make_plots.py         figures
 ├── step6_make_report.py        reports/RESULTS.md
 ├── src/                        simulator: data, partitions, model, FedAvg + PulseFed, byte counting
-├── tests/                      32 automated tests + synthetic dataset generator
-├── docs/FEDAVG_PSEUDOCODE.md   FedAvg and PulseFed pseudocode
+├── tests/                      34 automated tests + synthetic dataset generator
+├── docs/FEDAVG_PSEUDOCODE.md   FedAvg, PulseFed and PulseFed v2 pseudocode
 ├── results/  figures/  reports/   real-data outputs
 └── .github/workflows/tests.yml automatic tests on every push
 ```

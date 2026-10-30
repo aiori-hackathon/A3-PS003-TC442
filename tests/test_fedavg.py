@@ -91,3 +91,27 @@ def test_pulsefed_rules_hold_and_save_bytes():
             assert asleep <= 2
     assert pulse[-1]["cumulative_bytes"] <= full[-1]["cumulative_bytes"]
     assert all(h["control_bytes"] > 0 for h in pulse)                # control messages counted
+
+
+# ---------------------------------------------------------------- PulseFed v2
+from src.federated import aggregate_with_memory
+
+
+def test_memory_aggregation_equals_fedavg_when_all_fresh():
+    g = {"w": np.array([1.0, 1.0], np.float32)}
+    locals_ = [{"w": np.array([2.0, 0.0], np.float32)}, {"w": np.array([4.0, 2.0], np.float32)}]
+    memory = {k: {"w": l["w"] - g["w"]} for k, l in enumerate(locals_)}
+    out = aggregate_with_memory(g, memory, {0: 1, 1: 3})
+    assert np.allclose(out["w"], fedavg_aggregate(locals_, [1, 3])["w"])
+
+
+def test_pulsefed_v2_keeps_rules_and_runs():
+    rng = np.random.default_rng(0)
+    data = [(rng.normal(size=(80, 5)).astype(np.float32),
+             (rng.normal(size=80) * (k + 1)).astype(np.float32)) for k in range(4)]
+    full, _ = run_fedavg(data, 5, seed=0, num_rounds=8, local_epochs=1)
+    v2, _ = run_fedavg(data, 5, seed=0, num_rounds=8, local_epochs=1,
+                       participation="pulse_reuse", min_active=2, max_sleep=2)
+    assert len(v2[0]["active_clients"]) == 4
+    assert all(len(h["active_clients"]) >= 2 for h in v2)
+    assert v2[-1]["cumulative_bytes"] <= full[-1]["cumulative_bytes"]

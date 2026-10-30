@@ -24,6 +24,7 @@ LABELS = {
     "fedavg_noniid": "FedAvg, non-IID clients",
     "local_only_noniid": "Local-only (no collaboration), non-IID",
     "pulsefed_noniid": "PulseFed (update-aware participation), non-IID",
+    "pulsefed_v2_noniid": "PulseFed v2 (reuses sleeping clients' last update), non-IID",
     "fedprox_noniid": "FedProx (mu=%s), non-IID" % config.FEDPROX_MU,
     "fedavg_noniid_fp16": "FedAvg non-IID + FP16 uplink",
     "fedavg_noniid_int8": "FedAvg non-IID + INT8 uplink",
@@ -157,7 +158,7 @@ def main() -> int:
     c = summary.get("centralized")
     if c:
         add("**Gap to centralised (MAE):**")
-        for n in ["fedavg_iid", "fedavg_noniid", "pulsefed_noniid", "fedprox_noniid", "local_only_noniid", "persistence"]:
+        for n in ["fedavg_iid", "fedavg_noniid", "pulsefed_noniid", "pulsefed_v2_noniid", "fedprox_noniid", "local_only_noniid", "persistence"]:
             if n in summary:
                 gap = (summary[n]["mae_mean"] - c["mae_mean"]) / c["mae_mean"] * 100
                 add(f"- {LABELS[n]}: {gap:+.1f}%")
@@ -166,7 +167,7 @@ def main() -> int:
     # ------------------------------------------------------------- communication
     add("## 4. Communication cost")
     add("| Method | Bytes per round (mean) | Total incl. setup | MAE |\n|---|---|---|---|")
-    for n in ["fedavg_iid", "fedavg_noniid", "pulsefed_noniid", "fedprox_noniid", "fedavg_noniid_fp16", "fedavg_noniid_int8"]:
+    for n in ["fedavg_iid", "fedavg_noniid", "pulsefed_noniid", "pulsefed_v2_noniid", "fedprox_noniid", "fedavg_noniid_fp16", "fedavg_noniid_int8"]:
         if n in results:
             cm = results[n][0]["comm"]
             add(f"| {LABELS[n]} | {cm['bytes_per_round_mean'] / 1e3:.1f} KB | {mb(cm['total_bytes'])} | "
@@ -198,7 +199,7 @@ def main() -> int:
         target = c["mae_mean"] * 1.05
         add(f"Rounds needed to reach within 5% of centralised MAE (target MAE {target:.4f}):\n")
         add("| Method | Rounds to target (per seed) | Final-round MAE |\n|---|---|---|")
-        for n in ["fedavg_iid", "fedavg_noniid", "pulsefed_noniid", "fedprox_noniid", "fedavg_noniid_fp16", "fedavg_noniid_int8"]:
+        for n in ["fedavg_iid", "fedavg_noniid", "pulsefed_noniid", "pulsefed_v2_noniid", "fedprox_noniid", "fedavg_noniid_fp16", "fedavg_noniid_int8"]:
             if n in results:
                 rr = [rounds_to_reach(r["history"], target) for r in results[n]]
                 txt = ", ".join("not reached" if x is None else str(x) for x in rr)
@@ -225,6 +226,21 @@ def main() -> int:
     else:
         add("NOT YET RUN (needs `pulsefed_noniid` and `fedavg_noniid`).\n")
 
+    add("**PulseFed v2 (follow-up, rule fixed before running).** Same selection rule as PulseFed; the only "
+        "change is that the server reuses each sleeping client's most recent update, so every road group "
+        "always counts in the average. No extra bytes are sent.\n")
+    if "pulsefed_v2_noniid" in results and "fedavg_noniid" in results and "pulsefed_noniid" in results:
+        v2 = results["pulsefed_v2_noniid"]
+        b2 = np.mean([r["comm"]["total_bytes"] for r in v2]) / np.mean([f["comm"]["total_bytes"] for f in results["fedavg_noniid"]])
+        add(f"- Uploads per run: {', '.join(str(r['comm']['uploads_total']) for r in v2)} (per seed).")
+        add(f"- Total bytes: {b2:.0%} of FedAvg non-IID.")
+        add(f"- MAE: {fmt(summary['pulsefed_v2_noniid']['mae_mean'], summary['pulsefed_v2_noniid']['mae_std'])} "
+            f"vs PulseFed {fmt(summary['pulsefed_noniid']['mae_mean'], summary['pulsefed_noniid']['mae_std'])} "
+            f"vs FedAvg non-IID {fmt(summary['fedavg_noniid']['mae_mean'], summary['fedavg_noniid']['mae_std'])}.")
+        add("- See `figures/09_pulsefed_v2_participation.png`.\n")
+    else:
+        add("PulseFed v2: NOT YET RUN.\n")
+
     # ------------------------------------------------------------ heterogeneity
     add("## 7. Data heterogeneity and per-client results")
     if prep:
@@ -237,7 +253,7 @@ def main() -> int:
                 f"{hn['per_client_samples'][k]:,} | {hn['per_client_mean_target'][k]:.3f} | "
                 f"{hn['per_client_distance'][k]:.3f} |")
         add(f"| **mean** | | **{hi['mean_distance']:.3f}** | | | **{hn['mean_distance']:.3f}** |\n")
-    rows = [n for n in ["centralized", "fedavg_noniid", "pulsefed_noniid", "local_only_noniid"] if n in results]
+    rows = [n for n in ["centralized", "fedavg_noniid", "pulsefed_noniid", "pulsefed_v2_noniid", "local_only_noniid"] if n in results]
     if rows:
         k_count = len(results[rows[0]][0]["final"]["per_client"])
         add("Test MAE on each non-IID client's own sensors (mean over seeds):\n")
@@ -258,7 +274,8 @@ def main() -> int:
                    ("05_actual_vs_predicted.png", "Actual vs predicted traffic"),
                    ("06_per_client_fairness.png", "Per-client accuracy"),
                    ("07_client_distributions.png", "Client data distributions"),
-                   ("08_pulsefed_participation.png", "PulseFed: who talked in which round")]:
+                   ("08_pulsefed_participation.png", "PulseFed: who talked in which round"),
+                   ("09_pulsefed_v2_participation.png", "PulseFed v2: who talked in which round")]:
         if (config.FIGURES_DIR / f).exists():
             add(f"**{cap}**\n\n![{cap}](../{config.FIGURES_DIR.name}/{f})\n")
         else:
@@ -293,6 +310,10 @@ def main() -> int:
             r = np.mean([x["comm"]["total_bytes"] for x in results["pulsefed_noniid"]]) / np.mean([x["comm"]["total_bytes"] for x in results["fedavg_noniid"]])
             dm = summary["pulsefed_noniid"]["mae_mean"] - summary["fedavg_noniid"]["mae_mean"]
             add(f"- PulseFed uses {r:.0%} of plain FedAvg's total bytes with an MAE change of {dm:+.4f}.")
+        if "fedavg_noniid" in summary and "pulsefed_v2_noniid" in summary:
+            r = np.mean([x["comm"]["total_bytes"] for x in results["pulsefed_v2_noniid"]]) / np.mean([x["comm"]["total_bytes"] for x in results["fedavg_noniid"]])
+            dm = summary["pulsefed_v2_noniid"]["mae_mean"] - summary["fedavg_noniid"]["mae_mean"]
+            add(f"- PulseFed v2 uses {r:.0%} of plain FedAvg's total bytes with an MAE change of {dm:+.4f}.")
         if "fedavg_noniid" in results and "fedavg_noniid_int8" in results:
             r = results["fedavg_noniid_int8"][0]["comm"]["total_bytes"] / results["fedavg_noniid"][0]["comm"]["total_bytes"]
             dm = summary["fedavg_noniid_int8"]["mae_mean"] - summary["fedavg_noniid"]["mae_mean"]

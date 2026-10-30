@@ -26,6 +26,7 @@ LABELS = {
     "fedavg_noniid": "FedAvg non-IID",
     "local_only_noniid": "Local-only non-IID",
     "pulsefed_noniid": "PulseFed non-IID",
+    "pulsefed_v2_noniid": "PulseFed v2 non-IID",
     "fedprox_noniid": "FedProx non-IID",
     "fedavg_noniid_fp16": "FedAvg non-IID + FP16",
     "fedavg_noniid_int8": "FedAvg non-IID + INT8",
@@ -69,7 +70,7 @@ def plot_convergence(results):
     fig, axes = plt.subplots(1, 2, figsize=(12, 4.5))
     for ax, metric in zip(axes, ["test_mae", "test_rmse"]):
         for name, color in [("centralized", "#1f77b4"), ("fedavg_iid", "#2ca02c"),
-                            ("fedavg_noniid", "#d62728"), ("pulsefed_noniid", "#ff7f0e"),
+                            ("fedavg_noniid", "#d62728"), ("pulsefed_noniid", "#ff7f0e"), ("pulsefed_v2_noniid", "#8c564b"),
                             ("fedprox_noniid", "#9467bd")]:
             if name not in results:
                 continue
@@ -93,7 +94,7 @@ def plot_convergence(results):
 def plot_communication(results):
     fig, axes = plt.subplots(1, 2, figsize=(12, 4.5))
     raw, labelled = None, False
-    for name in ["fedavg_iid", "fedavg_noniid", "pulsefed_noniid", "fedavg_noniid_fp16", "fedavg_noniid_int8"]:
+    for name in ["fedavg_iid", "fedavg_noniid", "pulsefed_noniid", "pulsefed_v2_noniid", "fedavg_noniid_fp16", "fedavg_noniid_int8"]:
         if name not in results:
             continue
         r = results[name][0]
@@ -162,7 +163,7 @@ def plot_actual_vs_predicted(results):
 
 
 def plot_fairness(results):
-    names = [n for n in ["centralized", "fedavg_noniid", "pulsefed_noniid", "local_only_noniid", "persistence"] if n in results]
+    names = [n for n in ["centralized", "fedavg_noniid", "pulsefed_noniid", "pulsefed_v2_noniid", "local_only_noniid", "persistence"] if n in results]
     if not names:
         return
     fig, ax = plt.subplots(figsize=(9, 4.5))
@@ -206,12 +207,12 @@ def plot_heterogeneity():
     save(fig, "07_client_distributions.png")
 
 
-def plot_participation(results):
+def plot_participation(results, name="pulsefed_noniid", filename="08_pulsefed_participation.png"):
     """PulseFed: which client talked in which round (first seed)."""
-    if "pulsefed_noniid" not in results:
+    if name not in results:
         return
-    h = results["pulsefed_noniid"][0]["history"]
-    K = results["pulsefed_noniid"][0]["num_clients"]
+    h = results[name][0]["history"]
+    K = results[name][0]["num_clients"]
     grid = np.zeros((K, len(h)))            # 0 = asleep, 1 = talked, 2 = forced refresh
     for j, row in enumerate(h):
         for k in row["active_clients"]:
@@ -225,9 +226,9 @@ def plot_participation(results):
     ax.set_xticklabels([str(i + 1) for i in range(0, len(h), max(1, len(h) // 15))])
     ax.set_xlabel("communication round")
     total = int((grid > 0).sum())
-    ax.set_title(f"PulseFed participation (first seed): green = talked, amber = forced refresh, "
+    ax.set_title(f"{LABELS[name]} participation (first seed): green = talked, amber = forced refresh, "
                  f"grey = asleep  |  {total} uploads vs {K * len(h)} for FedAvg")
-    save(fig, "08_pulsefed_participation.png")
+    save(fig, filename)
 
 
 def main() -> int:
@@ -249,6 +250,7 @@ def main() -> int:
     plot_fairness(results)
     plot_heterogeneity()
     plot_participation(results)
+    plot_participation(results, "pulsefed_v2_noniid", "09_pulsefed_v2_participation.png")
     print("Next: python step6_make_report.py" + (" --quick" if config.QUICK_MODE else ""))
     return 0
 

@@ -94,35 +94,52 @@ def select_active(scores, asleep_streak, min_active, max_sleep):
     return sorted(chosen), forced
 
 
+def aggregate_with_memory(old_global: dict, memory: dict, sizes: dict) -> dict:
+    """
+    PulseFed v2: w_new = w_old + sum_k (n_k / n) * delta_k over ALL clients, where
+    delta_k is the client's freshest update (this round if it talked, otherwise the
+    last update it sent). Sleeping clients send nothing; the server reuses memory.
+    With every client active this equals plain FedAvg.
+    """
+    total = float(sum(sizes[k] for k in memory))
+    return {key: (old_global[key].astype(np.float64)
+                  + sum(memory[k][key].astype(np.float64) * (sizes[k] / total) for k in memory)
+                  ).astype(np.float32)
+            for key in old_global}
+
+
 def run_fedavg(client_data, num_features, seed, num_rounds, local_epochs,
                compression="none", prox_mu=0.0, eval_fn=None,
                participation="all", min_active=2, max_sleep=2):
     """
     client_data: list of (x_scaled, y_scaled) tuples, one per client.
     participation: "all" = plain FedAvg (everyone, every round)
+                   "pulse_reuse" = PulseFed v2: same selection, sleeping clients' last update reused
                    "pulse" = PulseFed (only clients whose model moved most, see select_active)
     eval_fn(model) -> dict of test metrics, called after every round.
     Returns the per-round history (metrics + measured bytes) and the server.
     """
-    if participation not in ("all", "pulse"):
-        raise ValueError("participation must be 'all' or 'pulse'")
+    if participation not in ("all", "pulse", "pulse_reuse"):
+        raise ValueError("participation must be 'all', 'pulse' or 'pulse_reuse'")
+    pulse = participation in ("pulse", "pulse_reuse")
     server = Server(num_features, seed)
     clients = [Client(k, x, y, num_features, seed) for k, (x, y) in enumerate(client_data)]
     K = len(clients)
-    if participation == "pulse" and not 1 <= min_active <= K:
+    if pulse and not 1 <= min_active <= K:
         raise ValueError("min_active must be between 1 and the number of clients")
     scores = np.zeros(K)          # last known update size of each client
     streak = np.zeros(K, int)     # rounds asleep in a row
+    memory = {}                   # PulseFed v2: last update (delta) received from each client
 
     history, cum_bytes = [], 0
     for rnd in range(1, num_rounds + 1):
-        if participation == "all" or rnd == 1:     # PulseFed: everyone talks in round 1
+        if not pulse or rnd == 1:                  # PulseFed: everyone talks in round 1
             active, forced = list(range(K)), []
         else:
             active, forced = select_active(scores, streak, min_active, max_sleep)
 
         control = 0
-        if participation == "pulse":               # server tells every client who is active
+        if pulse:                                  # server tells every client who is active
             mask = np.zeros(K, np.uint8)
             mask[active] = 1
             control = len(comm.to_bytes({"active": mask})) * K
@@ -137,6 +154,11 @@ def run_fedavg(client_data, num_features, seed, num_rounds, local_epochs,
         up_bytes = sum(len(u) for u in ups)
         sizes = [clients[k].n for k in active]
         updates, old_global = server.aggregate(ups, sizes, compression)
+        if participation == "pulse_reuse":         # replace the active-only average
+            for k, upd in zip(active, updates):
+                memory[k] = {key: upd[key] - old_global[key] for key in old_global}
+            all_sizes = {k: clients[k].n for k in memory}
+            server.model.set_params(aggregate_with_memory(old_global, memory, all_sizes))
 
         for k, upd in zip(active, updates):
             scores[k] = update_score(upd, old_global)
